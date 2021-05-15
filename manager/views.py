@@ -5,31 +5,38 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from .models import PasswordRecord
 from .serializers import PasswordSerializer, PasswordListSerializer
 from rest_framework.response import Response
+from django.core.exceptions import PermissionDenied
+from rest_framework import status
+
+from manager import serializers
 
 
 class PasswordList(generics.ListAPIView):
-    queryset = PasswordRecord.objects.all()
+    # queryset = PasswordRecord.objects.all()
     serializer_class = PasswordListSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+
+    def get_queryset(self):
+        user = self.request.user
+        return PasswordRecord.objects.filter(email=user.email)
 
 
 class PasswordCreate(generics.CreateAPIView):
-    queryset = PasswordRecord.objects.all()
+    # queryset = PasswordRecord.objects.all()
     serializer_class = PasswordSerializer
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+
+    def perform_create(self, serializer):
+        if serializer.validated_data['email'] != self.request.user.email:
+            raise PermissionDenied()
+
+        serializer.save()
 
 
 class PasswordDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = PasswordRecord.objects.all()
+    # queryset = PasswordRecord.objects.all()
     serializer_class = PasswordSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
 
-
-class PasswordByUser(generics.ListAPIView):
-    model = PasswordRecord
-    serializer_class = PasswordListSerializer
-    lookup_field = 'email'
-
     def get_queryset(self):
-        email = self.kwargs['email']
-        return PasswordRecord.objects.filter(email=email)
+        user = self.request.user
+        return PasswordRecord.objects.filter(email=user.email)
