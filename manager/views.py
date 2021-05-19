@@ -12,7 +12,6 @@ from manager import serializers
 
 
 class PasswordList(generics.ListAPIView):
-    # queryset = PasswordRecord.objects.all()
     serializer_class = PasswordListSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
 
@@ -22,7 +21,6 @@ class PasswordList(generics.ListAPIView):
 
 
 class PasswordCreate(generics.CreateAPIView):
-    # queryset = PasswordRecord.objects.all()
     serializer_class = PasswordSerializer
 
     def perform_create(self, serializer):
@@ -33,7 +31,6 @@ class PasswordCreate(generics.CreateAPIView):
 
 
 class PasswordDetail(generics.RetrieveUpdateDestroyAPIView):
-    # queryset = PasswordRecord.objects.all()
     serializer_class = PasswordSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
 
